@@ -18,28 +18,28 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class Photonvision extends SubsystemBase {
-  PhotonCamera Shootercamera = new PhotonCamera("photonvision");
-  PhotonCamera rearCamera = new PhotonCamera("photonvision");
-  AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-  Transform3d cameraToRobot = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+  PhotonCamera camera;
+  AprilTagFieldLayout field;
+  Transform3d cameraToRobot; //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
   Pose3d estiPose3d;
+   PhotonTrackedTarget target;
   /** Creates a new Photonvision. */
-  public Photonvision() 
+  public Photonvision(PhotonCamera camera, AprilTagFieldLayout field,Transform3d cameraToRobot) 
   {
-
+    this.field=field;
+    this.camera=camera;
+    this.cameraToRobot=cameraToRobot;
   }
   public Pose3d getEsitmatedPose3d(){
-    return estiPose3d;
+    return PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), field.getTagPose(target.getFiducialId()).get(), cameraToRobot);
   }
 
   @Override
   public void periodic() {
-    var result=rearCamera.getLatestResult();
+    var result=camera.getLatestResult();
     if (result.hasTargets())
     {
-     PhotonTrackedTarget target = result.getBestTarget();
-     estiPose3d = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()).get(), cameraToRobot);
-      
+     this.target = result.getBestTarget();
     }
     // This method will be called once per scheduler run
   }

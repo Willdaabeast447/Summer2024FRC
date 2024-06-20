@@ -24,6 +24,8 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+  
   // falcon motor
   public static final int kShooterLeftId=32;
   public static final int kShooterRightId=33;
@@ -152,6 +154,13 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+  public static final class VisionConstants {
+    public static final String CameraShooter="ShooterCam";
+    public static final String CameraOne="LeftCam";
+    public static final String CameraTwo="RightCam";
+  
+    
   }
 
 public static double turretPositionFwdLimit=10;
