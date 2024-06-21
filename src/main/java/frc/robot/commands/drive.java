@@ -44,8 +44,8 @@ public class drive extends Command {
     }
     else{
     drive.drive(
-      -MathUtil.applyDeadband(xspeed.getAsDouble(), OIConstants.kDriveDeadband),
-      -MathUtil.applyDeadband(yspeed.getAsDouble(), OIConstants.kDriveDeadband),
+      MathUtil.applyDeadband(xspeed.getAsDouble(), OIConstants.kDriveDeadband),
+      MathUtil.applyDeadband(yspeed.getAsDouble(), OIConstants.kDriveDeadband),
       -MathUtil.applyDeadband(rotspeed.getAsDouble(), OIConstants.kDriveDeadband),
       true, true);
     }

@@ -146,7 +146,7 @@ public class Shooter extends SubsystemBase {
   else{
     feedBall(false);
   }
-  setShooterMotor(-speed/4);
+  setShooterMotor(-speed/3);
   driveTurret(rot);
 
   }
