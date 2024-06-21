@@ -33,10 +33,17 @@ public class Photonvision extends SubsystemBase {
   public Pose3d getEsitmatedPose3d(){
     return PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), field.getTagPose(target.getFiducialId()).get(), cameraToRobot);
   }
+  public void targetFound(){
+
+  }
 
   @Override
   public void periodic() {
     var result=camera.getLatestResult();
+    if (result.targets.contains("4"))
+    {
+
+    }
     if (result.hasTargets())
     {
      this.target = result.getBestTarget();
