@@ -17,12 +17,17 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TESTshooter;
+import frc.robot.commands.TestToggle;
 import frc.robot.commands.drive;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import java.util.List;
 
 /*
@@ -37,7 +42,8 @@ public class RobotContainer {
   private final Shooter m_Shooter=new Shooter();
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
-
+  Trigger aButton = new JoystickButton(m_driverController, XboxController.Button.kA.value);
+  Trigger xButton = new JoystickButton(m_driverController, XboxController.Button.kX.value);  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -57,10 +63,7 @@ public class RobotContainer {
         )
         );            
     m_Shooter.setDefaultCommand(
-      new TESTshooter(m_Shooter,
-      ()->m_driverController.getRightTriggerAxis(),
-      ()->m_driverController.getRightBumper(),
-      ()->m_driverController.getLeftBumper()));    
+      new TestToggle(m_Shooter, 0));    
   }
 
   /**
@@ -73,11 +76,16 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
- /*   new JoystickButton(m_driverController, Button.kR1.value)
+   /* new JoystickButton(m_driverController, aButton)
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
+            m_robotDrive)); */
+    aButton.toggleOnTrue(new TestToggle(m_Shooter, -270));
+    xButton.toggleOnTrue(new RunCommand(
+            () -> m_robotDrive.setX(),
             m_robotDrive));
-  */ }
+
+   }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

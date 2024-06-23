@@ -7,19 +7,27 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import frc.robot.Constants.ShooterConstants;;
 public class Shooter extends SubsystemBase {
-  private final TalonSRX elevatorTalonFX= new TalonSRX(Constants.ShooterConstants.kElevatorId);
-  private final TalonSRX funnelTalonFX= new TalonSRX(Constants.ShooterConstants.kFunnelId);
-  private final TalonSRX floorFx= new TalonSRX(Constants.ShooterConstants.kFloorId);
-  private final TalonFX shooterLeftFx= new TalonFX(Constants.ShooterConstants.kShooterLeftId);
-  private final TalonFX shooterRightFx = new TalonFX(Constants.ShooterConstants.kShooterRightId);
-  private final TalonFX shooterRotationFx= new TalonFX(Constants.ShooterConstants.kShooterRotationId);
+  private final TalonSRX elevatorTalonFX= new TalonSRX(ShooterConstants.kElevatorId);
+  private final TalonSRX funnelTalonFX= new TalonSRX(ShooterConstants.kFunnelId);
+  private final TalonSRX floorFx= new TalonSRX(ShooterConstants.kFloorId);
+  private final TalonFX shooterLeftFx= new TalonFX(ShooterConstants.kShooterLeftId);
+  private final TalonFX shooterRightFx = new TalonFX(ShooterConstants.kShooterRightId);
+  private final TalonFX shooterRotationFx= new TalonFX(ShooterConstants.kShooterRotationId);
+  private final PositionVoltage m_positionVoltage = new PositionVoltage(0).withSlot(0);
+  private SlewRateLimiter turretRotLimiter = new SlewRateLimiter(ShooterConstants.kRotationalSlewRate);
+  private double tartgetTurretPosition=0;
+  private boolean enableTurretPID=false;
+  private double TurretmotorValue=0;
   /** Creates a new Shooter. */
   public Shooter() {
  shooterRotationFx.getPosition() ; 
@@ -70,8 +78,22 @@ public class Shooter extends SubsystemBase {
    */
   public void driveTurret(double motorValue)
   {
-    shooterRotationFx.set(turretRotationlimits(getTurretPosition(), motorValue));
+    if( this.enableTurretPID){
+      this.enableTurretPID=false;
+    }
+    this.TurretmotorValue=motorValue;
 
+  }
+  /*
+   * using built in pid on falcon 500 drive to postion
+   */
+  public void driveTurretToPos(double position){
+    if( !this.enableTurretPID){
+      this.enableTurretPID=true;
+    }
+    double postionAdjustedInRange= shooterSetpointInRotationRange(position);
+    double rotations= postionAdjustedInRange*ShooterConstants.turretRotPerDeg;
+    this.tartgetTurretPosition=rotations;
   }
 
   /*
@@ -83,11 +105,11 @@ public class Shooter extends SubsystemBase {
   public double turretRotationlimits(double position,double motorValue)
   {
     double output=0;
-    if ( Constants.ShooterConstants.turretPositionFwdLimit>position&& Constants.ShooterConstants.turretPositionRevLimit<position)
+    if ( ShooterConstants.turretPositionFwdLimit>position&& ShooterConstants.turretPositionRevLimit<position)
     {
     output=motorValue;
     }
-    else if ( Constants.ShooterConstants.turretPositionFwdLimit<=position)
+    else if (ShooterConstants.turretPositionFwdLimit<=position)
     {
       if( motorValue<0)
       {
@@ -98,7 +120,7 @@ public class Shooter extends SubsystemBase {
       }
 
     }
-    else if ( Constants.ShooterConstants.turretPositionRevLimit>=position)
+    else if (ShooterConstants.turretPositionRevLimit>=position)
     {
       if( motorValue>0)
       {
@@ -127,14 +149,14 @@ public class Shooter extends SubsystemBase {
   public double shooterSetpointInRotationRange(double setpoint)
   {
     double output;
-    if (Math.abs(setpoint)>Constants.ShooterConstants.turretRotationLimitDeg)
+    if (Math.abs(setpoint)>ShooterConstants.turretRotationLimitDeg)
     {
-      double theta= Math.abs(setpoint)-Constants.ShooterConstants.turretRotationLimitDeg;
-      if (setpoint>Constants.ShooterConstants.turretRotationLimitDeg){
-        output=-Constants.ShooterConstants.turretRotationLimitDeg+theta;        
+      double theta= Math.abs(setpoint)-ShooterConstants.turretRotationLimitDeg;
+      if (setpoint>ShooterConstants.turretRotationLimitDeg){
+        output=-ShooterConstants.turretRotationLimitDeg+theta;        
       }
       else{
-        output=Constants.ShooterConstants.turretRotationLimitDeg-theta;
+        output=ShooterConstants.turretRotationLimitDeg-theta;
       }
     }
     else{
@@ -187,6 +209,13 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-
+    if(enableTurretPID){
+      shooterRotationFx.setControl(
+        m_positionVoltage.withPosition(turretRotLimiter.calculate(tartgetTurretPosition)));
+    }
+    else
+    {
+      shooterRotationFx.set(turretRotationlimits(getTurretPosition(), TurretmotorValue));
+    }
   }
 }

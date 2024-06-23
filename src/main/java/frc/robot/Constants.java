@@ -168,6 +168,10 @@ public static final class ShooterConstants{
   public static double turretPositionFwdLimit=10;
   public static double turretPositionRevLimit=-10;
   public static double turretRotationLimitDeg=180;
+
+  // coversion constants
+  public static double turretRotPerDeg= 0.065;
+  public static double kRotationalSlewRate=30;
 }
   
 }
