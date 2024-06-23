@@ -14,26 +14,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
-  private final TalonSRX elevatorTalonFX= new TalonSRX(Constants.kElevatorId);
-  private final TalonSRX funnelTalonFX= new TalonSRX(Constants.kFunnelId);
-  private final TalonSRX floorFx= new TalonSRX(Constants.kFloorId);
-  private final TalonFX shooterLeftFx= new TalonFX(Constants.kShooterLeftId);
-  private final TalonFX shooterRightFx = new TalonFX(Constants.kShooterRightId);
-  private final TalonFX shooterRotationFx= new TalonFX(Constants.kShooterRotationId);
+  private final TalonSRX elevatorTalonFX= new TalonSRX(Constants.ShooterConstants.kElevatorId);
+  private final TalonSRX funnelTalonFX= new TalonSRX(Constants.ShooterConstants.kFunnelId);
+  private final TalonSRX floorFx= new TalonSRX(Constants.ShooterConstants.kFloorId);
+  private final TalonFX shooterLeftFx= new TalonFX(Constants.ShooterConstants.kShooterLeftId);
+  private final TalonFX shooterRightFx = new TalonFX(Constants.ShooterConstants.kShooterRightId);
+  private final TalonFX shooterRotationFx= new TalonFX(Constants.ShooterConstants.kShooterRotationId);
   /** Creates a new Shooter. */
   public Shooter() {
  shooterRotationFx.getPosition() ; 
 
   TalonFXConfiguration configs = new TalonFXConfiguration();
-    configs.Slot0.kP = 2.4; // An error of 1 rotation results in 2.4 V output
+    configs.Slot0.kP = 1; // An error of 1 rotation results in 2.4 V output
     configs.Slot0.kI = 0; // No output for integrated error
-    configs.Slot0.kD = 0.1; // A velocity of 1 rps results in 0.1 V output
+    configs.Slot0.kD = 0.0001; // A velocity of 1 rps results in 0.1 V output
     // Peak output of 8 V
     configs.Voltage.PeakForwardVoltage = 8;
     configs.Voltage.PeakReverseVoltage = -8;
     shooterRotationFx.getConfigurator().apply(configs);
     shooterLeftFx.setInverted(true);
     shooterRightFx.setInverted(false);
+    shooterRotationFx.setPosition(0.0);
 
     
   }
@@ -73,14 +74,20 @@ public class Shooter extends SubsystemBase {
 
   }
 
+  /*
+   *manual rotation soft limit function
+   takes current motor postion and a control value and if motion is withing limits
+   allows for normal use
+   if motion is outside of limits then only allow values that would drive withing limits. 
+   */
   public double turretRotationlimits(double position,double motorValue)
   {
     double output=0;
-    if ( Constants.turretPositionFwdLimit>position&& Constants.turretPositionRevLimit<position)
+    if ( Constants.ShooterConstants.turretPositionFwdLimit>position&& Constants.ShooterConstants.turretPositionRevLimit<position)
     {
     output=motorValue;
     }
-    else if ( Constants.turretPositionFwdLimit<=position)
+    else if ( Constants.ShooterConstants.turretPositionFwdLimit<=position)
     {
       if( motorValue<0)
       {
@@ -91,7 +98,7 @@ public class Shooter extends SubsystemBase {
       }
 
     }
-    else if ( Constants.turretPositionRevLimit>=position)
+    else if ( Constants.ShooterConstants.turretPositionRevLimit>=position)
     {
       if( motorValue>0)
       {
@@ -105,6 +112,37 @@ public class Shooter extends SubsystemBase {
     return output;
 
   }
+
+
+
+
+/*
+ * shooterSetpointIn RotationRange Function
+ * Takes a degree value in as a double and checks if it is 
+ * in rotation rang of + or - the trurret rotation degree limit 
+ * defined in the Shooter Constants class in the constants file.
+ * If Setpoint is oustide that range converts it to a setpoint 
+ * with oposite rotation 
+ */
+  public double shooterSetpointInRotationRange(double setpoint)
+  {
+    double output;
+    if (Math.abs(setpoint)>Constants.ShooterConstants.turretRotationLimitDeg)
+    {
+      double theta= Math.abs(setpoint)-Constants.ShooterConstants.turretRotationLimitDeg;
+      if (setpoint>Constants.ShooterConstants.turretRotationLimitDeg){
+        output=-Constants.ShooterConstants.turretRotationLimitDeg+theta;        
+      }
+      else{
+        output=Constants.ShooterConstants.turretRotationLimitDeg-theta;
+      }
+    }
+    else{
+      output=setpoint;
+    }
+    return output;
+  }
+
 
   /*
    * shooter functions
@@ -133,11 +171,7 @@ public class Shooter extends SubsystemBase {
   /*
    * other funtions
    */
-  public void aimAt(double goal, double setpoint)
-  {
-
-  }
-
+ 
   public void testMotors(double speed,double rot){
   elevatorTalonFX.set(ControlMode.PercentOutput, -speed);  
   if(Math.abs(speed)>0){

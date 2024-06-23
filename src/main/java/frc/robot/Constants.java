@@ -26,16 +26,6 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
 
   
-  // falcon motor
-  public static final int kShooterLeftId=32;
-  public static final int kShooterRightId=33;
-  public static final int kShooterRotationId=31;
-
-  // Victor spx
-
-  public static final int kElevatorId=21;
-  public static final int kFunnelId=20;
-  public static final int kFloorId=22;
   public static final class DriveConstants {
   // Driving Parameters - Note that these are not the maximum capable speeds of
   // the robot, rather the allowed maximum speeds
@@ -43,7 +33,7 @@ public final class Constants {
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     public static final double kDirectionSlewRate = 1.2; // radians per second
-    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
+    public static final double kMagnitudeSlewRate = 3; // percent per second (1 = 100%)
     public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
     // Chassis configuration
@@ -75,7 +65,7 @@ public final class Constants {
     public static final int kRearRightTurningCanId = 13;
 
     public static final int kPigeonID=19;
-    public static final boolean kGyroReversed = false;
+    public static final boolean kGyroReversed = true;
 
 
 
@@ -162,9 +152,22 @@ public final class Constants {
   
     
   }
+public static final class ShooterConstants{
+  // falcon motor
+  public static final int kShooterLeftId=32;
+  public static final int kShooterRightId=33;
+  public static final int kShooterRotationId=31;
 
-public static double turretPositionFwdLimit=10;
-public static double turretPositionRevLimit=-10;
+  // Victor spx
 
+  public static final int kElevatorId=21;
+  public static final int kFunnelId=20;
+  public static final int kFloorId=22;
+  // Shooter limits
+
+  public static double turretPositionFwdLimit=10;
+  public static double turretPositionRevLimit=-10;
+  public static double turretRotationLimitDeg=180;
+}
   
 }
