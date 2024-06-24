@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -23,11 +24,12 @@ public class Photonvision extends SubsystemBase {
   Transform3d cameraToRobot; //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
   Pose3d estiPose3d;
    PhotonTrackedTarget target;
+  private boolean validTarget;
   /** Creates a new Photonvision. */
-  public Photonvision(PhotonCamera camera, AprilTagFieldLayout field,Transform3d cameraToRobot) 
+  public Photonvision(String camerashooter, AprilTagFieldLayout field,Transform3d cameraToRobot) 
   {
     this.field=field;
-    this.camera=camera;
+    this.camera=new PhotonCamera(camerashooter);
     this.cameraToRobot=cameraToRobot;
   }
   public Pose3d getEsitmatedPose3d(){
@@ -36,16 +38,28 @@ public class Photonvision extends SubsystemBase {
   public void targetFound(){
 
   }
+  public int getTargetID(){
+    return this.target.getFiducialId();
+  }
+
+  public double getTargetYaw()
+  {
+    SmartDashboard.putNumber("tag yaw",target.getYaw());
+    return this.target.getYaw();
+    
+  }
+  public boolean hasTargets()
+  {
+    return this.validTarget;
+  }
 
   @Override
   public void periodic() {
     var result=camera.getLatestResult();
-    if (result.targets.contains("4"))
-    {
-
-    }
+    this.validTarget=result.hasTargets();
     if (result.hasTargets())
     {
+     
      this.target = result.getBestTarget();
     }
     // This method will be called once per scheduler run

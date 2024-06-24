@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -16,10 +17,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AutoAim;
+import frc.robot.commands.ShooterGetYaw;
 import frc.robot.commands.TESTshooter;
 import frc.robot.commands.TestToggle;
 import frc.robot.commands.drive;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Photonvision;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -40,6 +44,7 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Shooter m_Shooter=new Shooter();
+  private final Photonvision sight= new Photonvision(Constants.VisionConstants.CameraShooter,Constants.VisionConstants.field,new Transform3d(0, 0, 0, null));
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   Trigger aButton = new JoystickButton(m_driverController, XboxController.Button.kA.value);
@@ -63,7 +68,9 @@ public class RobotContainer {
         )
         );            
     m_Shooter.setDefaultCommand(
-      new TestToggle(m_Shooter, 0));    
+      new TestToggle(m_Shooter, 0)); 
+    sight.setDefaultCommand(
+      new ShooterGetYaw(sight));    
   }
 
   /**
@@ -80,7 +87,7 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive)); */
-    aButton.toggleOnTrue(new TestToggle(m_Shooter, -270));
+    aButton.toggleOnTrue(new AutoAim(sight,m_Shooter));
     xButton.toggleOnTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));

@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -146,7 +148,8 @@ public final class Constants {
     public static final double kFreeSpeedRpm = 5676;
   }
   public static final class VisionConstants {
-    public static final String CameraShooter="ShooterCam";
+    public static final AprilTagFieldLayout field=AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    public static final String CameraShooter="Shooter";
     public static final String CameraOne="LeftCam";
     public static final String CameraTwo="RightCam";
   
