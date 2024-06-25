@@ -4,16 +4,18 @@
 
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonUtils;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -25,16 +27,20 @@ public class Photonvision extends SubsystemBase {
   Pose3d estiPose3d;
    PhotonTrackedTarget target;
   private boolean validTarget;
+  private PhotonPoseEstimator photonPoseEstimator;
+  private Boolean calcPose;
   /** Creates a new Photonvision. */
-  public Photonvision(String camerashooter, AprilTagFieldLayout field,Transform3d cameraToRobot) 
+  public Photonvision(String camerashooter, AprilTagFieldLayout field,Transform3d cameraToRobot,Boolean calcPose) 
   {
     this.field=field;
     this.camera=new PhotonCamera(camerashooter);
     this.cameraToRobot=cameraToRobot;
+    this.calcPose=calcPose;
+    if (calcPose){
+    this.photonPoseEstimator = new PhotonPoseEstimator(field, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraToRobot);
+    }
   }
-  public Pose3d getEsitmatedPose3d(){
-    return PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), field.getTagPose(target.getFiducialId()).get(), cameraToRobot);
-  }
+ 
   public void targetFound(){
 
   }
@@ -52,15 +58,25 @@ public class Photonvision extends SubsystemBase {
   {
     return this.validTarget;
   }
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return photonPoseEstimator.update();
+    }
+
+    // TODO make method to look for specific tag id
 
   @Override
   public void periodic() {
-    var result=camera.getLatestResult();
-    this.validTarget=result.hasTargets();
-    if (result.hasTargets())
-    {
-     
-     this.target = result.getBestTarget();
+    // check to see if camera is being used to calculate a pose
+    if (!calcPose){
+      // if not find the best target and return it
+      var result=camera.getLatestResult();
+      this.validTarget=result.hasTargets();
+      if (result.hasTargets())
+      {
+     //TODO change this to find specific target
+       this.target = result.getBestTarget();
+      }
     }
     // This method will be called once per scheduler run
   }

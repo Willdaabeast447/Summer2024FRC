@@ -17,16 +17,15 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAim;
 import frc.robot.commands.ShooterGetYaw;
-import frc.robot.commands.TESTshooter;
 import frc.robot.commands.TestToggle;
 import frc.robot.commands.drive;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Photonvision;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -42,11 +41,31 @@ import java.util.List;
  */
 public class RobotContainer {
   // The robot's subsystems
+
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Shooter m_Shooter=new Shooter();
-  private final Photonvision sight= new Photonvision(Constants.VisionConstants.CameraShooter,Constants.VisionConstants.field,new Transform3d(0, 0, 0, null));
+  private final Photonvision sight= new Photonvision(
+    VisionConstants.CameraShooter,
+    Constants.VisionConstants.field,
+    new Transform3d(0, 0, 0, null),
+    false);
+  private final Photonvision leftcam= new Photonvision(
+    Constants.VisionConstants.CameraShooter,
+    Constants.VisionConstants.field,
+    VisionConstants.LeftCamtobot,
+    true);
+  private final Photonvision rightcam= new Photonvision(
+    Constants.VisionConstants.CameraShooter,
+    Constants.VisionConstants.field,
+    VisionConstants.RightCamtobot,
+    true);
+
+
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  
+  // Defining buttons for command triggers
+
   Trigger aButton = new JoystickButton(m_driverController, XboxController.Button.kA.value);
   Trigger xButton = new JoystickButton(m_driverController, XboxController.Button.kX.value);  
   /**
@@ -60,17 +79,23 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
-        new drive(m_robotDrive,
+        new drive(m_robotDrive, 
         ()->m_driverController.getLeftY(),
         ()->m_driverController.getLeftX(), 
         ()->m_driverController.getRightX(),
-        ()->m_driverController.getXButton()
-        )
-        );            
+        leftcam,
+        rightcam ));            
     m_Shooter.setDefaultCommand(
+      // hold the turret at pos 0 until auto aim is enabled
       new TestToggle(m_Shooter, 0)); 
+
     sight.setDefaultCommand(
-      new ShooterGetYaw(sight));    
+      // report the yaw back to the dashboard 
+      new ShooterGetYaw(sight));
+      
+    /*
+     * TODO ad default commands to  left and right cameras
+     */
   }
 
   /**
@@ -87,7 +112,7 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive)); */
-    aButton.toggleOnTrue(new AutoAim(sight,m_Shooter));
+    aButton.toggleOnTrue(new AutoAim(sight, m_Shooter));
     xButton.toggleOnTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));

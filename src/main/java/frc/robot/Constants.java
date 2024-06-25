@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -152,6 +154,16 @@ public final class Constants {
     public static final String CameraShooter="Shooter";
     public static final String CameraOne="LeftCam";
     public static final String CameraTwo="RightCam";
+    public static final Transform3d LeftCamtobot=new Transform3d(
+      Units.inchesToMeters(13.514), 
+      Units.inchesToMeters(-6.5), 
+      Units.inchesToMeters(9.692),
+      new Rotation3d(0, Units.degreesToRadians(30),0));
+    public static final Transform3d RightCamtobot=new Transform3d(
+      Units.inchesToMeters(13.514), 
+      Units.inchesToMeters(6.5), 
+      Units.inchesToMeters(9.692),
+      new Rotation3d(0, Units.degreesToRadians(30),0));
   
     
   }
