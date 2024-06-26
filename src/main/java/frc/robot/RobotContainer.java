@@ -4,18 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAim;
@@ -27,11 +17,10 @@ import frc.robot.subsystems.Photonvision;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-import java.util.List;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -82,9 +71,7 @@ public class RobotContainer {
         new drive(m_robotDrive, 
         ()->m_driverController.getLeftY(),
         ()->m_driverController.getLeftX(), 
-        ()->m_driverController.getRightX(),
-        leftcam,
-        rightcam ));            
+        ()->m_driverController.getRightX()));            
     m_Shooter.setDefaultCommand(
       // hold the turret at pos 0 until auto aim is enabled
       new TestToggle(m_Shooter, 0)); 
@@ -96,6 +83,8 @@ public class RobotContainer {
     /*
      * TODO ad default commands to  left and right cameras
      */
+
+     
   }
 
   /**
@@ -125,7 +114,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Create config for trajectory
+  /*/  // Create config for trajectory
     TrajectoryConfig config = new TrajectoryConfig(
         AutoConstants.kMaxSpeedMetersPerSecond,
         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
@@ -162,6 +151,9 @@ public class RobotContainer {
     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));
+    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false, false));*/
+    
+      return new PathPlannerAuto("Example Auto");
+    
   }
 }

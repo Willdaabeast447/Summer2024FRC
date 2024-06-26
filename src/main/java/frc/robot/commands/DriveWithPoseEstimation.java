@@ -12,21 +12,25 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Photonvision;
 
-public class drive extends Command {
+public class DriveWithPoseEstimation extends Command {
   private DriveSubsystem drive;
   private DoubleSupplier xspeed;
   private DoubleSupplier yspeed;
   private DoubleSupplier rotspeed;
- 
+  private Photonvision leftCam;
+  private Photonvision rightCam;
 
   /** Creates a new drive. */
-  public drive(
+  public DriveWithPoseEstimation(
     DriveSubsystem drive,
     DoubleSupplier xspeed,
     DoubleSupplier yspeed,
-    DoubleSupplier rotspeed) {
+    DoubleSupplier rotspeed,
+    Photonvision lefPhotonCamera,
+    Photonvision rightPhotonCamera) {
     
-    
+    this.leftCam=lefPhotonCamera;
+    this.rightCam=rightPhotonCamera;
     this.drive=drive;
     this.xspeed=xspeed;
     this.yspeed=yspeed;
