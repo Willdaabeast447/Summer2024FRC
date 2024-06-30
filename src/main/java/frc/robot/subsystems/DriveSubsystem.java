@@ -16,6 +16,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -69,7 +70,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(m_gyro.getAngle()),
+      Rotation2d.fromDegrees(m_gyro.getYaw().getValue()),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -79,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final Field2d m_field = new Field2d();
 
-  private Pose2d pose;
+  private Pose2d pose= new Pose2d( 2.0,7.0,new Rotation2d(0));
 
   private final SwerveDrivePoseEstimator poseEstimator;
 
@@ -88,18 +89,20 @@ public class DriveSubsystem extends SubsystemBase {
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
+
+    //m_gyro.setYaw(180);
     var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
         var visionStdDevs = VecBuilder.fill(1, 1, 1);
         poseEstimator =
                 new SwerveDrivePoseEstimator(
                        DriveConstants.kDriveKinematics,
-                        Rotation2d.fromDegrees(m_gyro.getAngle()),
+                        Rotation2d.fromDegrees(m_gyro.getYaw().getValue()),
                          new SwerveModulePosition[] {
                             m_frontLeft.getPosition(),
                             m_frontRight.getPosition(),
                             m_rearLeft.getPosition(),
                             m_rearRight.getPosition()},
-                        new Pose2d(),
+                        new Pose2d( 2.0,7.0,new Rotation2d(0)),
                         stateStdDevs,
                         visionStdDevs);
 
@@ -112,7 +115,7 @@ public class DriveSubsystem extends SubsystemBase {
                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                 new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                 4.5, // Max module speed, in m/s
-                0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+                0.7, // Drive base radius in meters. Distance from robot center to furthest module.
                 new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
         () -> {
@@ -133,16 +136,9 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update the odometry in the periodic block
-    m_odometry.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle()),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        });
+  
         poseEstimator.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle()),
+        Rotation2d.fromDegrees(m_gyro.getYaw().getValue()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -179,7 +175,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getAngle()),
+        Rotation2d.fromDegrees(m_gyro.getYaw().getValue()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -256,11 +252,11 @@ public class DriveSubsystem extends SubsystemBase {
     double xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond;
     double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed;
-    this.chassisCurrentSpeeds=ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getAngle()));
+    this.chassisCurrentSpeeds=ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getYaw().getValue()));
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getAngle()))
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getYaw().getValue()))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -272,8 +268,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void driveRelativeSpeeds(ChassisSpeeds speeds)
   {
-    double x=speeds.vxMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond;
-    double y=speeds.vyMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond;
+    double x=-speeds.vxMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond;
+    double y=-speeds.vyMetersPerSecond/DriveConstants.kMaxSpeedMetersPerSecond;
     double rot=speeds.omegaRadiansPerSecond/DriveConstants.kMaxAngularSpeed;
     drive(x, y, rot, true, true);
   }
@@ -319,9 +315,9 @@ public class DriveSubsystem extends SubsystemBase {
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public double getHeading() {
-    return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
-  }
+  //public double getHeading() {
+    //return Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()).getDegrees();
+  //}
 
   /**
    * Returns the turn rate of the robot.

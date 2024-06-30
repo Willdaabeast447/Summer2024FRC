@@ -24,7 +24,7 @@ public class Photonvision extends SubsystemBase {
   PhotonCamera camera;
   AprilTagFieldLayout field;
   Transform3d cameraToRobot; //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-  Pose3d estiPose3d;
+  Optional<EstimatedRobotPose> estiPose3d;
    PhotonTrackedTarget target;
   private boolean validTarget;
   private PhotonPoseEstimator photonPoseEstimator;
@@ -37,7 +37,7 @@ public class Photonvision extends SubsystemBase {
     this.cameraToRobot=cameraToRobot;
     this.calcPose=calcPose;
     if (calcPose){
-    this.photonPoseEstimator = new PhotonPoseEstimator(field, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, cameraToRobot);
+    
     }
   }
  
@@ -58,9 +58,10 @@ public class Photonvision extends SubsystemBase {
   {
     return this.validTarget;
   }
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return photonPoseEstimator.update();
+  public  void getEstimatedGlobalPose() {
+        
+        estiPose3d= photonPoseEstimator.update();
+         
     }
 
     // TODO make method to look for specific tag id
@@ -76,6 +77,14 @@ public class Photonvision extends SubsystemBase {
       {
      //TODO change this to find specific target
        this.target = result.getBestTarget();
+      /* getEstimatedGlobalPose();
+       double x =estiPose3d.get().estimatedPose.getX();
+       double y =estiPose3d.get().estimatedPose.getX();
+       double Rot =estiPose3d.get().estimatedPose.getX();
+       SmartDashboard.putNumber("pose X",x);
+       SmartDashboard.putNumber("pose Y",x);
+       SmartDashboard.putNumber("pose Rot",x);
+       */
       }
     }
     // This method will be called once per scheduler run
