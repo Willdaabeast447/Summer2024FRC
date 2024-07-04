@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.DriveWithPoseEstimation;
 import frc.robot.commands.OribitCurrentPosition;
 import frc.robot.commands.ShooterGetYaw;
 import frc.robot.commands.TestToggle;
@@ -65,13 +66,22 @@ public class RobotContainer {
     configureButtonBindings();
 
     // Configure default commands
-    m_robotDrive.setDefaultCommand(
+    /*m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new drive(m_robotDrive, 
         ()->m_driverController.getLeftY(),
         ()->m_driverController.getLeftX(), 
-        ()->m_driverController.getRightX()));            
+        ()->m_driverController.getRightX()));  
+        
+    */
+    m_robotDrive.setDefaultCommand(new DriveWithPoseEstimation(
+          m_robotDrive,
+          ()->m_driverController.getLeftY(),
+          ()->m_driverController.getLeftX(), 
+          ()->m_driverController.getRightX(),
+           photonvisionPose));
+           
     m_Shooter.setDefaultCommand(
       // hold the turret at pos 0 until auto aim is enabled
       new TestToggle(m_Shooter, 0)); 

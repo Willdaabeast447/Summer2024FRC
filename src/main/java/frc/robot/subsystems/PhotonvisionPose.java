@@ -32,10 +32,14 @@ public class PhotonvisionPose extends SubsystemBase {
   private Transform3d rightcameraToRobot=VisionConstants.RightCamtobot; //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
   private PhotonPoseEstimator leftPhotonPoseEstimator = new PhotonPoseEstimator(this.field, PoseStrategy.LOWEST_AMBIGUITY,this.leftPhotonCamera,this.leftcameraToRobot);
   private PhotonPoseEstimator rightPhotonPoseEstimator = new PhotonPoseEstimator(this.field, PoseStrategy.LOWEST_AMBIGUITY,this.rightPhotonCamera,this.rightcameraToRobot);
-  private Optional<EstimatedRobotPose> estiPose3d;
+
 
   private PhotonTrackedTarget target;
   private boolean validTarget;
+  private EstimatedRobotPose leftEst;
+
+  private EstimatedRobotPose rightEst;
+
   
   
   /** Creates a new Photonvision. */
@@ -46,9 +50,7 @@ public class PhotonvisionPose extends SubsystemBase {
   
   }
  
-  public void targetFound(){
-
-  }
+ 
   public int getTargetID(){
     return this.target.getFiducialId();
   }
@@ -59,18 +61,25 @@ public class PhotonvisionPose extends SubsystemBase {
     return this.target.getYaw();
     
   }
-           
-  
+        
   public boolean hasTargets()
   {
     return this.validTarget;
   }
+ 
+ 
   public Optional<EstimatedRobotPose> getEstimatedGlobalPose(PhotonPoseEstimator poseEstimator) {
     
     return poseEstimator.update();
 }
 
-    // TODO make method to look for specific tag id
+public EstimatedRobotPose getLeftEstimatedRobotPose(){
+  return leftEst;
+}
+public EstimatedRobotPose getRightEstimatedRobotPose(){
+  return rightEst;
+}
+
 
   @Override
   public void periodic() {
@@ -85,13 +94,9 @@ public class PhotonvisionPose extends SubsystemBase {
       this.target = leftResult.getBestTarget();
       var left=getEstimatedGlobalPose(leftPhotonPoseEstimator);
       if (left.isPresent()){
-      //Pose2d leftEst= left.get().estimatedPose.toPose2d();
-      //double x =leftEst.getX();
-      //double y =leftEst.getY();
-      //double Rot =leftEst.getRotation().getRadians();
-      //SmartDashboard.putNumber("pose X"+getName(),x);
-      //SmartDashboard.putNumber("pose Y"+getName(),y);
-      //SmartDashboard.putNumber("pose Rot"+getName(),Rot);
+      leftEst= left.get();
+      
+
       }
       }
           var rightResult=rightPhotonCamera.getLatestResult();
@@ -102,13 +107,8 @@ public class PhotonvisionPose extends SubsystemBase {
       this.target = rightResult.getBestTarget();
       var right=getEstimatedGlobalPose(rightPhotonPoseEstimator);
       if (right.isPresent()){
-      Pose2d rightEst=right.get().estimatedPose.toPose2d();
-      //double x =rightEst.estimatedPose.getX();
-      //double y =rightEst.getY();
-      //double Rot =rightEst.getRotation().getRadians();
-      //SmartDashboard.putData("EstimatedRobotPose", (Sendable) rightEst);
-      //SmartDashboard.putNumber("pose Y right"+getName(),y);
-      //SmartDashboard.putNumber("pose Rot right "+getName(),Rot);
+      rightEst=right.get();
+      
       }
       }
     }
