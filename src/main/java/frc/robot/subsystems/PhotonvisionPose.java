@@ -84,7 +84,7 @@ public class PhotonvisionPose extends SubsystemBase {
      //TODO change this to find specific target
       this.target = leftResult.getBestTarget();
       var left=getEstimatedGlobalPose(leftPhotonPoseEstimator);
-      if (!(left==null)){
+      if (left.isPresent()){
       //Pose2d leftEst= left.get().estimatedPose.toPose2d();
       //double x =leftEst.getX();
       //double y =leftEst.getY();
@@ -101,8 +101,8 @@ public class PhotonvisionPose extends SubsystemBase {
      //TODO change this to find specific target
       this.target = rightResult.getBestTarget();
       var right=getEstimatedGlobalPose(rightPhotonPoseEstimator);
-      if (!(right==null)){
-      Pose3d rightEst=right.get().estimatedPose;
+      if (right.isPresent()){
+      Pose2d rightEst=right.get().estimatedPose.toPose2d();
       //double x =rightEst.estimatedPose.getX();
       //double y =rightEst.getY();
       //double Rot =rightEst.getRotation().getRadians();
