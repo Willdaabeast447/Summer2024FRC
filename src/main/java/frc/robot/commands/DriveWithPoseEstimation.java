@@ -6,31 +6,31 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import org.photonvision.EstimatedRobotPose;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Photonvision;
+import frc.robot.subsystems.PhotonvisionPose;
 
 public class DriveWithPoseEstimation extends Command {
   private DriveSubsystem drive;
   private DoubleSupplier xspeed;
   private DoubleSupplier yspeed;
   private DoubleSupplier rotspeed;
-  private Photonvision leftCam;
-  private Photonvision rightCam;
-
+  private PhotonvisionPose visionPose;
+  private EstimatedRobotPose leftPose;
+  
   /** Creates a new drive. */
   public DriveWithPoseEstimation(
     DriveSubsystem drive,
     DoubleSupplier xspeed,
     DoubleSupplier yspeed,
     DoubleSupplier rotspeed,
-    Photonvision lefPhotonCamera,
-    Photonvision rightPhotonCamera) {
+    PhotonvisionPose visionPose) {
     
-    this.leftCam=lefPhotonCamera;
-    this.rightCam=rightPhotonCamera;
+    this.visionPose=visionPose;
     this.drive=drive;
     this.xspeed=xspeed;
     this.yspeed=yspeed;
@@ -47,6 +47,11 @@ public class DriveWithPoseEstimation extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    EstimatedRobotPose leftPose=visionPose.getLeftEstimatedRobotPose();
+    EstimatedRobotPose rightPose= visionPose.getRightEstimatedRobotPose();
+
+    drive.addVisionMeasurement(leftPose.estimatedPose.toPose2d(), leftPose.timestampSeconds);
+    drive.addVisionMeasurement(rightPose.estimatedPose.toPose2d(), rightPose.timestampSeconds);
     
     //TODO get pose estimations and feed to drive esimator
     drive.drive(
