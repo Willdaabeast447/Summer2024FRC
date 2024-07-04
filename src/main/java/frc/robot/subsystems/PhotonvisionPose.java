@@ -14,7 +14,10 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -27,8 +30,8 @@ public class PhotonvisionPose extends SubsystemBase {
   private AprilTagFieldLayout field=VisionConstants.field;
   private Transform3d leftcameraToRobot=VisionConstants.LeftCamtobot;
   private Transform3d rightcameraToRobot=VisionConstants.RightCamtobot; //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
-  private PhotonPoseEstimator leftPhotonPoseEstimator = new PhotonPoseEstimator(this.field, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,this.leftPhotonCamera,this.leftcameraToRobot);
-  private PhotonPoseEstimator rightPhotonPoseEstimator = new PhotonPoseEstimator(this.field, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,this.rightPhotonCamera,this.rightcameraToRobot);
+  private PhotonPoseEstimator leftPhotonPoseEstimator = new PhotonPoseEstimator(this.field, PoseStrategy.LOWEST_AMBIGUITY,this.leftPhotonCamera,this.leftcameraToRobot);
+  private PhotonPoseEstimator rightPhotonPoseEstimator = new PhotonPoseEstimator(this.field, PoseStrategy.LOWEST_AMBIGUITY,this.rightPhotonCamera,this.rightcameraToRobot);
   private Optional<EstimatedRobotPose> estiPose3d;
 
   private PhotonTrackedTarget target;
@@ -80,30 +83,32 @@ public class PhotonvisionPose extends SubsystemBase {
       {
      //TODO change this to find specific target
       this.target = leftResult.getBestTarget();
-      Pose2d leftEst=getEstimatedGlobalPose(leftPhotonPoseEstimator).get().estimatedPose.toPose2d();
-      if (!(leftEst==null)){
-      double x =leftEst.getX();
-      double y =leftEst.getY();
-      double Rot =leftEst.getRotation().getRadians();
-      SmartDashboard.putNumber("pose X"+getName(),x);
-      SmartDashboard.putNumber("pose Y"+getName(),y);
-      SmartDashboard.putNumber("pose Rot"+getName(),Rot);
+      var left=getEstimatedGlobalPose(leftPhotonPoseEstimator);
+      if (!(left==null)){
+      //Pose2d leftEst= left.get().estimatedPose.toPose2d();
+      //double x =leftEst.getX();
+      //double y =leftEst.getY();
+      //double Rot =leftEst.getRotation().getRadians();
+      //SmartDashboard.putNumber("pose X"+getName(),x);
+      //SmartDashboard.putNumber("pose Y"+getName(),y);
+      //SmartDashboard.putNumber("pose Rot"+getName(),Rot);
       }
       }
-          var rightResult=leftPhotonCamera.getLatestResult();
+          var rightResult=rightPhotonCamera.getLatestResult();
       this.validTarget=rightResult.hasTargets();
       if (rightResult.hasTargets())
       {
      //TODO change this to find specific target
       this.target = rightResult.getBestTarget();
-      Pose2d rightEst=getEstimatedGlobalPose(rightPhotonPoseEstimator).get().estimatedPose.toPose2d();
-      if (!(rightEst==null)){
-      double x =rightEst.getX();
-      double y =rightEst.getY();
-      double Rot =rightEst.getRotation().getRadians();
-      SmartDashboard.putNumber("pose X right"+getName(),x);
-      SmartDashboard.putNumber("pose Y right"+getName(),y);
-      SmartDashboard.putNumber("pose Rot right "+getName(),Rot);
+      var right=getEstimatedGlobalPose(rightPhotonPoseEstimator);
+      if (!(right==null)){
+      Pose3d rightEst=right.get().estimatedPose;
+      //double x =rightEst.estimatedPose.getX();
+      //double y =rightEst.getY();
+      //double Rot =rightEst.getRotation().getRadians();
+      //SmartDashboard.putData("EstimatedRobotPose", (Sendable) rightEst);
+      //SmartDashboard.putNumber("pose Y right"+getName(),y);
+      //SmartDashboard.putNumber("pose Rot right "+getName(),Rot);
       }
       }
     }
