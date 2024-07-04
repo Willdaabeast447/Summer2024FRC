@@ -5,12 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.PhotonvisionPose;
 
-import frc.robot.subsystems.PhotonvisionTurret;
-
-public class ShooterGetYaw extends Command {
-  /** Creates a new ShooterGetYaw. */
-  public ShooterGetYaw(PhotonvisionTurret camera) {
+public class TestVisionPose extends Command {
+  private PhotonvisionPose camera;
+  /** Creates a new TestVisionPose. */
+  public TestVisionPose(PhotonvisionPose camera) {
+    this.camera=camera;
 
     addRequirements(camera);
     // Use addRequirements() here to declare subsystem dependencies.
@@ -22,7 +23,9 @@ public class ShooterGetYaw extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    camera.getPose2d();
+  }
 
   // Called once the command ends or is interrupted.
   @Override

@@ -4,18 +4,20 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.OribitCurrentPosition;
 import frc.robot.commands.ShooterGetYaw;
 import frc.robot.commands.TestToggle;
 import frc.robot.commands.drive;
+import frc.robot.commands.TestVisionPose;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Photonvision;
+import frc.robot.subsystems.PhotonvisionPose;
+import frc.robot.subsystems.PhotonvisionTurret;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -23,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -36,22 +37,18 @@ public class RobotContainer {
 
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Shooter m_Shooter=new Shooter();
-  private final Photonvision sight= new Photonvision(
+  private final PhotonvisionTurret sight= new PhotonvisionTurret(
     VisionConstants.CameraShooter,
-    Constants.VisionConstants.field,
-    new Transform3d(0, 0, 0, null),
-    false);
-  private final Photonvision leftcam= new Photonvision(
+    Constants.VisionConstants.field);
+  private final PhotonvisionPose leftcam= new PhotonvisionPose(
     Constants.VisionConstants.CameraShooter,
     Constants.VisionConstants.field,
-    VisionConstants.LeftCamtobot,
-    true);
-  private final Photonvision rightcam= new Photonvision(
+    VisionConstants.LeftCamtobot);
+  /*private final PhotonvisionPose rightcam= new PhotonvisionPose(
     Constants.VisionConstants.CameraShooter,
     Constants.VisionConstants.field,
-    VisionConstants.RightCamtobot,
-    true);
-
+    VisionConstants.RightCamtobot);
+  */
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -60,6 +57,7 @@ public class RobotContainer {
 
   Trigger aButton = new JoystickButton(m_driverController, XboxController.Button.kA.value);
   Trigger xButton = new JoystickButton(m_driverController, XboxController.Button.kX.value);
+  Trigger yButton = new JoystickButton(m_driverController, XboxController.Button.kY.value);
   private SendableChooser<Command> autoChooser;  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -83,6 +81,8 @@ public class RobotContainer {
     sight.setDefaultCommand(
       // report the yaw back to the dashboard 
       new ShooterGetYaw(sight));
+    leftcam.setDefaultCommand( new TestVisionPose(leftcam));
+    //rightcam.setDefaultCommand(new TestVisionPose(rightcam));
       
     /*
      * TODO ad default commands to  left and right cameras
@@ -92,6 +92,8 @@ public class RobotContainer {
     SmartDashboard.putData("autochooser",autoChooser);
      
   }
+
+
 
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -103,14 +105,17 @@ public class RobotContainer {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-   /* new JoystickButton(m_driverController, aButton)
-        .whileTrue(new RunCommand(
-            () -> m_robotDrive.setX(),
-            m_robotDrive)); */
+  
     aButton.toggleOnTrue(new AutoAim(sight, m_Shooter));
     xButton.toggleOnTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
+    yButton.toggleOnTrue(new OribitCurrentPosition(
+            m_robotDrive,
+            ()->m_driverController.getLeftX(),
+            ()->m_driverController.getLeftY(),
+            ()->m_driverController.getRightX()
+            ));
 
    }
 

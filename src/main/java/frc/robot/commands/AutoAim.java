@@ -5,16 +5,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Photonvision;
+import frc.robot.subsystems.PhotonvisionTurret;
 import frc.robot.subsystems.Shooter;
 
 public class AutoAim extends Command {
-  private Photonvision sight;
+  private PhotonvisionTurret sight;
   private Shooter shooter;
   private double yaw=0;;
 
   /** Creates a new AutoAim. */
-  public AutoAim(Photonvision sight,Shooter kshooter) {
+  public AutoAim(PhotonvisionTurret sight,Shooter kshooter) {
     this.sight=sight;
     this.shooter=kshooter;
     

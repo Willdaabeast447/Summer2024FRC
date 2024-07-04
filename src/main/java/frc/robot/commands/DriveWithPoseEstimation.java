@@ -10,15 +10,15 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.Photonvision;
+import frc.robot.subsystems.PhotonvisionPose;
 
 public class DriveWithPoseEstimation extends Command {
   private DriveSubsystem drive;
   private DoubleSupplier xspeed;
   private DoubleSupplier yspeed;
   private DoubleSupplier rotspeed;
-  private Photonvision leftCam;
-  private Photonvision rightCam;
+  private PhotonvisionPose leftCam;
+  private PhotonvisionPose rightCam;
 
   /** Creates a new drive. */
   public DriveWithPoseEstimation(
@@ -26,8 +26,8 @@ public class DriveWithPoseEstimation extends Command {
     DoubleSupplier xspeed,
     DoubleSupplier yspeed,
     DoubleSupplier rotspeed,
-    Photonvision lefPhotonCamera,
-    Photonvision rightPhotonCamera) {
+    PhotonvisionPose lefPhotonCamera,
+    PhotonvisionPose rightPhotonCamera) {
     
     this.leftCam=lefPhotonCamera;
     this.rightCam=rightPhotonCamera;

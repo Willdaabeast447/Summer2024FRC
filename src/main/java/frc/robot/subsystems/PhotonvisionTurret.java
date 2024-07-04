@@ -9,18 +9,15 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-public class Photonvision extends SubsystemBase {
+public class PhotonvisionTurret extends SubsystemBase {
   PhotonCamera camera;
   AprilTagFieldLayout field;
   Transform3d cameraToRobot; //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
@@ -28,17 +25,14 @@ public class Photonvision extends SubsystemBase {
    PhotonTrackedTarget target;
   private boolean validTarget;
   private PhotonPoseEstimator photonPoseEstimator;
-  private Boolean calcPose;
+  
   /** Creates a new Photonvision. */
-  public Photonvision(String camerashooter, AprilTagFieldLayout field,Transform3d cameraToRobot,Boolean calcPose) 
+  public PhotonvisionTurret(String camerashooter, AprilTagFieldLayout field) 
   {
     this.field=field;
     this.camera=new PhotonCamera(camerashooter);
-    this.cameraToRobot=cameraToRobot;
-    this.calcPose=calcPose;
-    if (calcPose){
     
-    }
+   
   }
  
   public void targetFound(){
@@ -68,8 +62,8 @@ public class Photonvision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // check to see if camera is being used to calculate a pose
-    if (!calcPose){
+    // check to see if camera is being used to nulate a pose
+    
       // if not find the best target and return it
       var result=camera.getLatestResult();
       this.validTarget=result.hasTargets();
@@ -89,4 +83,4 @@ public class Photonvision extends SubsystemBase {
     }
     // This method will be called once per scheduler run
   }
-}
+
