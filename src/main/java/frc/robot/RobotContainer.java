@@ -40,10 +40,8 @@ public class RobotContainer {
   private final PhotonvisionTurret sight= new PhotonvisionTurret(
     VisionConstants.CameraShooter,
     Constants.VisionConstants.field);
-  private final PhotonvisionPose leftcam= new PhotonvisionPose(
-    Constants.VisionConstants.CameraShooter,
-    Constants.VisionConstants.field,
-    VisionConstants.LeftCamtobot);
+  private final PhotonvisionPose photonvisionPose=new PhotonvisionPose();
+
   /*private final PhotonvisionPose rightcam= new PhotonvisionPose(
     Constants.VisionConstants.CameraShooter,
     Constants.VisionConstants.field,
@@ -81,7 +79,7 @@ public class RobotContainer {
     sight.setDefaultCommand(
       // report the yaw back to the dashboard 
       new ShooterGetYaw(sight));
-    leftcam.setDefaultCommand( new TestVisionPose(leftcam));
+    photonvisionPose.setDefaultCommand( new TestVisionPose(photonvisionPose));
     //rightcam.setDefaultCommand(new TestVisionPose(rightcam));
       
     /*
