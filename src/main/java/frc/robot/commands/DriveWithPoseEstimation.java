@@ -20,7 +20,7 @@ public class DriveWithPoseEstimation extends Command {
   private DoubleSupplier yspeed;
   private DoubleSupplier rotspeed;
   private PhotonvisionPose visionPose;
-  private EstimatedRobotPose leftPose;
+ 
   
   /** Creates a new drive. */
   public DriveWithPoseEstimation(
