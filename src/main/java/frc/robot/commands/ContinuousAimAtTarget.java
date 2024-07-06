@@ -4,32 +4,47 @@
 
 package frc.robot.commands;
 
+import java.lang.reflect.Field;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PhotonvisionTurret;
 import frc.robot.subsystems.Shooter;
 
-public class AutoAim extends Command {
+public class ContinuousAimAtTarget extends Command {
   private PhotonvisionTurret sight;
   private Shooter shooter;
-  private double yaw=0;;
+  private double yaw=0;
+  private DriveSubsystem drive;
+  private Pose2d pose=new Pose2d();
 
-  /** Creates a new AutoAim. */
-  public AutoAim(PhotonvisionTurret sight,Shooter kshooter) {
+
+  /** Creates a ContinuousAimAtTarget */
+  public ContinuousAimAtTarget(PhotonvisionTurret sight,Shooter kshooter,DriveSubsystem drive) {
     this.sight=sight;
     this.shooter=kshooter;
+    this.drive=drive;
     addRequirements(sight);
     addRequirements(shooter);
+    addRequirements(drive);
     
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
-  // Called when the command is initially scheduled.
+ 
+
+// Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    pose=drive.getPose();
+    SmartDashboard.putNumber("x pose ", pose.getX());
     if(sight.hasTargets()){
        this.yaw = -sight.getTargetYaw();
       }

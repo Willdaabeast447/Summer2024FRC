@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.AutoAim;
+import frc.robot.commands.ContinuousAimAtTarget;
 import frc.robot.commands.DriveWithPoseEstimation;
 import frc.robot.commands.OribitCurrentPosition;
 import frc.robot.commands.ShooterGetYaw;
@@ -57,6 +58,7 @@ public class RobotContainer {
   Trigger aButton = new JoystickButton(m_driverController, XboxController.Button.kA.value);
   Trigger xButton = new JoystickButton(m_driverController, XboxController.Button.kX.value);
   Trigger yButton = new JoystickButton(m_driverController, XboxController.Button.kY.value);
+  Trigger bButton = new JoystickButton(m_driverController, XboxController.Button.kB.value);
   private SendableChooser<Command> autoChooser;  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -124,6 +126,7 @@ public class RobotContainer {
             ()->m_driverController.getLeftY(),
             ()->m_driverController.getRightX()
             ));
+    bButton.toggleOnTrue(new ContinuousAimAtTarget(sight, m_Shooter,m_robotDrive));
 
    }
 
