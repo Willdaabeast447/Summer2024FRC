@@ -49,8 +49,9 @@ public class DriveWithPoseEstimation extends Command {
   public void execute() {
     EstimatedRobotPose leftPose=visionPose.getLeftEstimatedRobotPose();
     EstimatedRobotPose rightPose= visionPose.getRightEstimatedRobotPose();
-
+    if (leftPose!=null)
     drive.addVisionMeasurement(leftPose.estimatedPose.toPose2d(), leftPose.timestampSeconds);
+    if (rightPose!=null)
     drive.addVisionMeasurement(rightPose.estimatedPose.toPose2d(), rightPose.timestampSeconds);
     
     //TODO get pose estimations and feed to drive esimator
