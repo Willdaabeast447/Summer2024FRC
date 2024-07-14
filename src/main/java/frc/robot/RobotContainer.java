@@ -18,6 +18,7 @@ import frc.robot.commands.TestToggle;
 import frc.robot.commands.drive;
 import frc.robot.commands.TestVisionPose;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.Hoppper;
 import frc.robot.subsystems.PhotonvisionPose;
 import frc.robot.subsystems.PhotonvisionTurret;
 import frc.robot.subsystems.Shooter;
@@ -39,6 +40,7 @@ public class RobotContainer {
 
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Shooter m_Shooter=new Shooter();
+  private final Hoppper hoppper=new Hoppper();
   private final PhotonvisionTurret sight= new PhotonvisionTurret(
     VisionConstants.CameraShooter,
     Constants.VisionConstants.field);
@@ -86,7 +88,7 @@ public class RobotContainer {
            
     m_Shooter.setDefaultCommand(
       // hold the turret at pos 0 until auto aim is enabled
-      new TestToggle(m_Shooter, 0)); 
+      new TestToggle(m_Shooter, hoppper, 0, ()->m_driverController.getRightTriggerAxis())); 
 
     sight.setDefaultCommand(
       // report the yaw back to the dashboard 
@@ -116,7 +118,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
   
-    aButton.toggleOnTrue(new AutoAim(sight, m_Shooter));
+    
     xButton.toggleOnTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));

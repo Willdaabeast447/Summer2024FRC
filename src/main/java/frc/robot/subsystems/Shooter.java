@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;;
 public class Shooter extends SubsystemBase {
   private final TalonSRX elevatorTalonFX= new TalonSRX(ShooterConstants.kElevatorId);
-  private final TalonSRX funnelTalonFX= new TalonSRX(ShooterConstants.kFunnelId);
+  
   private final TalonSRX floorFx= new TalonSRX(ShooterConstants.kFloorId);
   private final TalonFX shooterLeftFx= new TalonFX(ShooterConstants.kShooterLeftId);
   private final TalonFX shooterRightFx = new TalonFX(ShooterConstants.kShooterRightId);
@@ -60,15 +60,7 @@ public class Shooter extends SubsystemBase {
    * 
    */
 
-  public void setShooterRPM(double rpm )
-  {
 
-  }
-
-  public void setShooter(double speed)
-  {
-
-  }
 
   /*
    * Turrent funtions 
@@ -170,7 +162,7 @@ public class Shooter extends SubsystemBase {
   /*
    * shooter functions
    */
-  void setShooterMotor(double motorValue)
+  public void setShooterMotor(double motorValue)
   {
     shooterLeftFx.set(motorValue);
     shooterRightFx.set(motorValue);
@@ -179,17 +171,7 @@ public class Shooter extends SubsystemBase {
   /*
    * hopper funtions
    */
-  void feedBall(boolean feed)
-  {
-    if (feed){
-     floorFx.set(ControlMode.PercentOutput, -0.95); 
-     funnelTalonFX.set(ControlMode.PercentOutput, 0.95);
-    }
-    else{
-    floorFx.set(ControlMode.PercentOutput, 0); 
-    funnelTalonFX.set(ControlMode.PercentOutput, 0);
-    }
-  }
+  
   
   /*
    * other funtions
@@ -197,12 +179,7 @@ public class Shooter extends SubsystemBase {
  
   public void testMotors(double speed,double rot){
   elevatorTalonFX.set(ControlMode.PercentOutput, -speed);  
-  if(Math.abs(speed)>0){
-    feedBall(true);
-  }
-  else{
-    feedBall(false);
-  }
+
   setShooterMotor(-speed/3);
   driveTurret(rot);
 

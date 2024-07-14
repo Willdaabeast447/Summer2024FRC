@@ -4,16 +4,23 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Hoppper;
 import frc.robot.subsystems.Shooter;
 
 public class TestToggle extends Command {
-  private final Shooter shooter;
-  private final double position;
+  private  Shooter shooter;
+  private double position;
+  private Hoppper hopper;
+  private DoubleSupplier speed;
   /** Creates a new TestToggle. */
-  public TestToggle(Shooter shooterSubsystem,double position) {
+  public TestToggle(Shooter shooterSubsystem,Hoppper hoppper ,double position,DoubleSupplier speed) {
     this.shooter=shooterSubsystem;
     this.position=position;
+    this.hopper=hoppper;
+    this.speed=speed;
     addRequirements(shooter);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -26,6 +33,20 @@ public class TestToggle extends Command {
   @Override
   public void execute() {
     shooter.driveTurretToPos(position);
+    if (Math.abs(speed.getAsDouble())>0)
+    {
+    hopper.setAgitator(0.5);
+    hopper.setElevator(1);
+    shooter.setShooterMotor(speed.getAsDouble());
+    }
+    else
+    {
+    hopper.setAgitator(0.0);
+    hopper.setElevator(0);
+    shooter.setShooterMotor(speed.getAsDouble());
+    }
+
+
   }
 
   // Called once the command ends or is interrupted.
