@@ -36,13 +36,13 @@ public class TestToggle extends Command {
     shooter.driveTurretToPos(position);
     if (Math.abs(speed.getAsDouble())>0)
     {
-    hopper.setAgitator(SmartDashboard.getNumber("RBH Speed", 0));
+    hopper.setAgitator();
     hopper.setElevator(1);
     shooter.setShooterMotor(speed.getAsDouble());
     }
     else
     {
-    hopper.setAgitator(0.0);
+    hopper.stopAgitator();
     hopper.setElevator(0);
     shooter.setShooterMotor(speed.getAsDouble());
     }
