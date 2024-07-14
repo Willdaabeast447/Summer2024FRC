@@ -172,8 +172,8 @@ public final class Constants {
   }
 public static final class ShooterConstants{
   // falcon motor
-  public static final int kShooterLeftId=33;
-  public static final int kShooterRightId=32;
+  public static final int kShooterLeftId=32;
+  public static final int kShooterRightId=33;
   public static final int kShooterRotationId=31;
 
   // Victor spx

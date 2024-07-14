@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hoppper;
 import frc.robot.subsystems.Shooter;
@@ -35,7 +36,7 @@ public class TestToggle extends Command {
     shooter.driveTurretToPos(position);
     if (Math.abs(speed.getAsDouble())>0)
     {
-    hopper.setAgitator(0.5);
+    hopper.setAgitator(SmartDashboard.getNumber("RBH Speed", 0));
     hopper.setElevator(1);
     shooter.setShooterMotor(speed.getAsDouble());
     }
