@@ -22,7 +22,7 @@ public class Hoppper extends SubsystemBase {
          .getEntry();
   /** Creates a new Hoppper. */
   public Hoppper() {
-    agitatorFx.setInverted(true);
+    agitatorFx.setInverted(false);
 
   }
 
