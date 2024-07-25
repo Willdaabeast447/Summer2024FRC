@@ -4,23 +4,30 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hoppper;
 import frc.robot.subsystems.Shooter;
 
-public class TestShooter extends Command {
-  private  Shooter shooter;
-  private double position;
+public class ManualShooter extends Command {
+ 
+  private double motorvalue;
+  private Shooter shooter;
+  private DoubleSupplier rightTrigger;
+  private BooleanSupplier rightBumper;
+  private BooleanSupplier leftBumper;
   private Hoppper hopper;
-  private DoubleSupplier speed;
-  /** Creates a new TestToggle. */
-  public TestShooter(Shooter shooterSubsystem,Hoppper hoppper ,double position,DoubleSupplier speed) {
-    this.shooter=shooterSubsystem;
-    this.position=position;
-    this.hopper=hoppper;
-    this.speed=speed;
+
+  /** Creates a new ManualShooter. */
+  public ManualShooter(Hoppper hopper,Shooter shooter,BooleanSupplier rightbumper,BooleanSupplier leftbumper, DoubleSupplier rightTrigger) {
+    this.shooter=shooter;
+    this.leftBumper=leftbumper;
+    this.rightBumper=rightbumper;
+    this.rightTrigger=rightTrigger;
+    this.hopper=hopper;
+
     addRequirements(shooter);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -32,21 +39,33 @@ public class TestShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.driveTurretToPos(position);
-    if (Math.abs(speed.getAsDouble())>0)
+    double speed=rightTrigger.getAsDouble();
+    if (rightBumper.getAsBoolean()||leftBumper.getAsBoolean())
+    {
+      if(rightBumper.getAsBoolean()){
+        motorvalue=-0.1;
+      }
+      else
+      {
+        motorvalue=0.1;
+      }
+    }
+    else
+    {
+      motorvalue=0;
+    }
+    shooter.driveTurret(motorvalue);
+    shooter.setShooterMotor(rightTrigger.getAsDouble());
+    if (Math.abs(speed)>0)
     {
     hopper.setAgitator();
     hopper.setElevator();
-    shooter.setShooterMotor(speed.getAsDouble());
     }
     else
     {
     hopper.stopAgitator();
     hopper.stopElevator();
-    shooter.setShooterMotor(speed.getAsDouble());
     }
-
-
   }
 
   // Called once the command ends or is interrupted.

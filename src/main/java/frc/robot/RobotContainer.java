@@ -9,13 +9,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.AutoAim;
+import frc.robot.commands.AutoAimAtBestTarget;
 import frc.robot.commands.ContinuousAimAtTarget;
 import frc.robot.commands.DriveWithPoseEstimation;
+import frc.robot.commands.ManualShooter;
 import frc.robot.commands.OribitCurrentPosition;
 import frc.robot.commands.ShooterGetYaw;
-import frc.robot.commands.TestToggle;
-import frc.robot.commands.drive;
 import frc.robot.commands.TestVisionPose;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Hoppper;
@@ -69,16 +68,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
 
-    // Configure default commands
-    /*m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new drive(m_robotDrive, 
-        ()->m_driverController.getLeftY(),
-        ()->m_driverController.getLeftX(), 
-        ()->m_driverController.getRightX()));  
-        
-    */
+
     m_robotDrive.setDefaultCommand(new DriveWithPoseEstimation(
           m_robotDrive,
           ()->m_driverController.getLeftY(),
@@ -88,7 +78,11 @@ public class RobotContainer {
            
     m_Shooter.setDefaultCommand(
       // hold the turret at pos 0 until auto aim is enabled
-      new TestToggle(m_Shooter, hoppper, 0, ()->m_driverController.getRightTriggerAxis())); 
+      new ManualShooter(hoppper,
+                        m_Shooter,
+                        ()->m_driverController.getRightBumper(),
+                        ()->m_driverController.getLeftBumper(),
+                        ()->m_driverController.getRightTriggerAxis())); 
 
     sight.setDefaultCommand(
       // report the yaw back to the dashboard 
@@ -96,9 +90,7 @@ public class RobotContainer {
     photonvisionPose.setDefaultCommand( new TestVisionPose(photonvisionPose));
     //rightcam.setDefaultCommand(new TestVisionPose(rightcam));
       
-    /*
-     * TODO ad default commands to  left and right cameras
-     */
+   
     autoChooser= AutoBuilder.buildAutoChooser();
 
     SmartDashboard.putData("autochooser",autoChooser);
@@ -128,7 +120,8 @@ public class RobotContainer {
             ()->m_driverController.getLeftY(),
             ()->m_driverController.getRightX()
             ));
-    bButton.toggleOnTrue(new ContinuousAimAtTarget(sight, m_Shooter,m_robotDrive));
+    bButton.toggleOnTrue(new ContinuousAimAtTarget(sight, m_Shooter,m_robotDrive,4));
+    aButton.toggleOnTrue(new AutoAimAtBestTarget(sight, m_Shooter));
 
    }
 

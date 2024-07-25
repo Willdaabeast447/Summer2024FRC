@@ -4,12 +4,13 @@
 
 package frc.robot.commands;
 
-import java.lang.reflect.Field;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PhotonvisionTurret;
 import frc.robot.subsystems.Shooter;
@@ -20,13 +21,17 @@ public class ContinuousAimAtTarget extends Command {
   private double yaw=0;
   private DriveSubsystem drive;
   private Pose2d pose=new Pose2d();
+  private int targetTag;
+  private Pose3d tagPose;
 
 
   /** Creates a ContinuousAimAtTarget */
-  public ContinuousAimAtTarget(PhotonvisionTurret sight,Shooter kshooter,DriveSubsystem drive) {
+  public ContinuousAimAtTarget(PhotonvisionTurret sight,Shooter kshooter,DriveSubsystem drive,int targetTag) {
     this.sight=sight;
     this.shooter=kshooter;
     this.drive=drive;
+    this.tagPose=VisionConstants.field.getTagPose(targetTag).get();
+    this.targetTag=targetTag;
     addRequirements(sight);
     addRequirements(shooter);
     addRequirements(drive);
@@ -44,14 +49,42 @@ public class ContinuousAimAtTarget extends Command {
   @Override
   public void execute() {
     pose=drive.getPose();
+    double robotRotation=pose.getRotation().getDegrees();
     SmartDashboard.putNumber("x pose ", pose.getX());
-    if(sight.hasTargets()){
-       this.yaw = -sight.getTargetYaw();
+    PhotonTrackedTarget target = sight.lookForTag(targetTag);
+    if(target!=null){
+       this.yaw = -target.getYaw();
+       shooter.autoAimTurret(yaw);
       }
       else{
-        this.yaw=0;
+        
+        double deltaY= pose.getY()-tagPose.getY();
+        double deltaX =pose.getX()-tagPose.getX();
+        double angleTheta=Math.atan(deltaY/deltaX);
+        double angleBeta=90-angleTheta;
+        double angleAlpha;
+        if (deltaX<0){
+          if (deltaY>0){
+          angleAlpha=180+angleBeta;
+          }
+          else{
+          angleAlpha=360-angleBeta;
+          }
+        }
+        else{
+          if (deltaY>0){
+          angleAlpha=180-angleBeta;
+          }
+          else{
+          angleAlpha=angleBeta;
+          }
+
+        }
+            
+        double turretAngle=angleAlpha-robotRotation;
+        shooter.driveTurretToPos(turretAngle);
       }
-    shooter.autoAimTurret(yaw);
+    
 
   }
 

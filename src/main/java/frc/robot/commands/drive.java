@@ -43,7 +43,7 @@ public class drive extends Command {
   @Override
   public void execute() {
     
-    //TODO get pose estimations and feed to drive esimator
+   
     drive.drive(
       MathUtil.applyDeadband(xspeed.getAsDouble(), OIConstants.kDriveDeadband),
       MathUtil.applyDeadband(yspeed.getAsDouble(), OIConstants.kDriveDeadband),

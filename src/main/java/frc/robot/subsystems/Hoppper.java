@@ -16,25 +16,39 @@ import frc.robot.Constants.ShooterConstants;
 public class Hoppper extends SubsystemBase {
   private final TalonSRX elevatorTalonFX= new TalonSRX(ShooterConstants.kElevatorId);  
   private final TalonSRX agitatorFx= new TalonSRX(ShooterConstants.kFloorId);
+
+  /* 
+   * shuffleboard setup
+   */
   private ShuffleboardTab tab = Shuffleboard.getTab("Hopper");
    private GenericEntry RHB_Speed =
       tab.add("RHB Speed", 0)
+         .getEntry();
+    private GenericEntry elevator_Speed =
+      tab.add("Elevator Speed", 0)
          .getEntry();
   /** Creates a new Hoppper. */
   public Hoppper() {
     agitatorFx.setInverted(false);
 
   }
-
+  
+  // set the speed of the Rotary Ball Hopper
   public void setAgitator(){
     agitatorFx.set(TalonSRXControlMode.PercentOutput,RHB_Speed.getDouble(0));
   }
+  // stop the Rotary Ball Hopper
   public void stopAgitator(){
     agitatorFx.set(TalonSRXControlMode.PercentOutput,0);
   }
-
-   public void setElevator(double speed){
-    elevatorTalonFX.set(TalonSRXControlMode.PercentOutput, speed);
+  
+  // set the speed of the elevator
+  public void setElevator(){
+    elevatorTalonFX.set(TalonSRXControlMode.PercentOutput, elevator_Speed.getDouble(0));
+  }
+  // stop the elevator
+  public void stopElevator(){
+    elevatorTalonFX.set(TalonSRXControlMode.PercentOutput,0);
   }
   @Override
   public void periodic() {

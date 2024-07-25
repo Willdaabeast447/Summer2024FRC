@@ -4,15 +4,25 @@
 
 package frc.robot.commands;
 
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.PhotonvisionPose;
+import frc.robot.subsystems.PhotonvisionTurret;
+import frc.robot.subsystems.Shooter;
 
-public class TestVisionPose extends Command {
-  /** Creates a new TestVisionPose. */
-  public TestVisionPose(PhotonvisionPose camera) {
+public class AutoAimAtBestTarget extends Command {
+  private PhotonvisionTurret sight;
+  private Shooter shooter;
+  private double yaw=0;
+  private PhotonTrackedTarget target;;
+
+  /** Creates a new AutoAim. */
+  public AutoAimAtBestTarget(PhotonvisionTurret sight,Shooter kshooter) {
+    this.sight=sight;
+    this.shooter=kshooter;
+    addRequirements(sight);
+    addRequirements(shooter);
     
-
-    addRequirements(camera);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -23,7 +33,15 @@ public class TestVisionPose extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-  
+    target=sight.findBesTarget();
+    if(target!=null){
+       this.yaw = -target.getYaw();
+      }
+      else{
+        this.yaw=0;
+      }
+    shooter.autoAimTurret(yaw);
+
   }
 
   // Called once the command ends or is interrupted.

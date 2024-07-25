@@ -14,21 +14,20 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;;
 public class Shooter extends SubsystemBase {
-  private final TalonSRX elevatorTalonFX= new TalonSRX(ShooterConstants.kElevatorId);
+private final TalonSRX elevatorTalonFX= new TalonSRX(ShooterConstants.kElevatorId);
   
-  private final TalonSRX floorFx= new TalonSRX(ShooterConstants.kFloorId);
-  private final TalonFX shooterLeftFx= new TalonFX(ShooterConstants.kShooterLeftId);
-  private final TalonFX shooterRightFx = new TalonFX(ShooterConstants.kShooterRightId);
-  private final TalonFX shooterRotationFx= new TalonFX(ShooterConstants.kShooterRotationId);
-  private final PositionVoltage m_positionVoltage = new PositionVoltage(0).withSlot(0);
-  private SlewRateLimiter turretRotLimiter = new SlewRateLimiter(ShooterConstants.kRotationalSlewRate);
-  private double tartgetTurretPosition=0;
-  private boolean enableTurretPID=false;
-  private double TurretmotorValue=0;
-  /** Creates a new Shooter. */
-  public Shooter() {
- shooterRotationFx.getPosition() ; 
-
+  
+private final TalonFX shooterLeftFx= new TalonFX(ShooterConstants.kShooterLeftId);
+private final TalonFX shooterRightFx = new TalonFX(ShooterConstants.kShooterRightId);
+private final TalonFX shooterRotationFx= new TalonFX(ShooterConstants.kShooterRotationId);
+private final PositionVoltage m_positionVoltage = new PositionVoltage(0).withSlot(0);
+private SlewRateLimiter turretRotLimiter = new SlewRateLimiter(ShooterConstants.kRotationalSlewRate);
+private double tartgetTurretPosition=0;
+private boolean enableTurretPID=false;
+private double TurretmotorValue=0;
+/** Creates a new Shooter. */
+public Shooter() {
+  shooterRotationFx.getPosition() ; 
   TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.Slot0.kP = 1; // An error of 1 rotation results in 2.4 V output
     configs.Slot0.kI = 0; // No output for integrated error
@@ -39,9 +38,7 @@ public class Shooter extends SubsystemBase {
     shooterRotationFx.getConfigurator().apply(configs);
     shooterLeftFx.setInverted(true);
     shooterRightFx.setInverted(false);
-    shooterRotationFx.setPosition(0.0);
-
-    
+    shooterRotationFx.setPosition(0.0);   
   }
 
   /*
@@ -53,14 +50,6 @@ public class Shooter extends SubsystemBase {
   {
     return shooterRotationFx.getPosition().getValueAsDouble();
   }
-
-  /*
-   * Setter Funtions 
-   * should only set single value
-   * 
-   */
-
-
 
   /*
    * Turrent funtions 
@@ -124,14 +113,13 @@ public class Shooter extends SubsystemBase {
 
   }
 
- public void autoAimTurret(double yaw)
+  public void autoAimTurret(double yaw)
  {
   double theta=yaw+shooterRotationFx.getPosition().getValueAsDouble()/ShooterConstants.turretRotPerDeg;
   driveTurretToPos(theta);
  }
 
-
-/*
+  /*
  * shooterSetpointIn RotationRange Function
  * Takes a degree value in as a double and checks if it is 
  * in rotation rang of + or - the trurret rotation degree limit 
@@ -158,7 +146,6 @@ public class Shooter extends SubsystemBase {
     return output;
   }
 
-
   /*
    * shooter functions
    */
@@ -168,15 +155,6 @@ public class Shooter extends SubsystemBase {
     shooterRightFx.set(motorValue);
   }
 
-  /*
-   * hopper funtions
-   */
-  
-  
-  /*
-   * other funtions
-   */
- 
   public void testMotors(double speed,double rot){
   elevatorTalonFX.set(ControlMode.PercentOutput, -speed);  
 

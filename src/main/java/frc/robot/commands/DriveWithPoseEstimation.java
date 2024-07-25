@@ -54,7 +54,7 @@ public class DriveWithPoseEstimation extends Command {
     if (rightPose!=null)
     drive.addVisionMeasurement(rightPose.estimatedPose.toPose2d(), rightPose.timestampSeconds);
     
-    //TODO get pose estimations and feed to drive esimator
+    
     drive.drive(
       MathUtil.applyDeadband(xspeed.getAsDouble(), OIConstants.kDriveDeadband),
       MathUtil.applyDeadband(yspeed.getAsDouble(), OIConstants.kDriveDeadband),
