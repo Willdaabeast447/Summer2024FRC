@@ -60,7 +60,7 @@ public class ContinuousAimAtTarget extends Command {
         
         double deltaY= pose.getY()-tagPose.getY();
         double deltaX =pose.getX()-tagPose.getX();
-        double angleTheta=Math.atan(deltaY/deltaX);
+        double angleTheta=Math.toDegrees(Math.atan(deltaY/deltaX)) ;
         double angleBeta=90-angleTheta;
         double angleAlpha;
         if (deltaX<0){

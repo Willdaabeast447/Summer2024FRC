@@ -11,6 +11,9 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;;
 public class Shooter extends SubsystemBase {
@@ -25,11 +28,16 @@ private SlewRateLimiter turretRotLimiter = new SlewRateLimiter(ShooterConstants.
 private double tartgetTurretPosition=0;
 private boolean enableTurretPID=false;
 private double TurretmotorValue=0;
+
+private ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
+   private GenericEntry Flywheel_Speed =
+      tab.add("Flywheel Speed", 0)
+         .getEntry();
 /** Creates a new Shooter. */
 public Shooter() {
   shooterRotationFx.getPosition() ; 
   TalonFXConfiguration configs = new TalonFXConfiguration();
-    configs.Slot0.kP = 1; // An error of 1 rotation results in 2.4 V output
+    configs.Slot0.kP = 0.5; // An error of 1 rotation results in 2.4 V output
     configs.Slot0.kI = 0; // No output for integrated error
     configs.Slot0.kD = 0.0001; // A velocity of 1 rps results in 0.1 V output
     // Peak output of 8 V
@@ -149,8 +157,8 @@ public Shooter() {
   /*
    * shooter functions
    */
-  public void setShooterMotor(double motorValue)
-  {
+  public void setShooterMotor(double motorValue1)
+  {double motorValue= Flywheel_Speed.getDouble(0);
     shooterLeftFx.set(motorValue);
     shooterRightFx.set(motorValue);
   }
@@ -168,6 +176,7 @@ public Shooter() {
     if(enableTurretPID){
       shooterRotationFx.setControl(
         m_positionVoltage.withPosition(turretRotLimiter.calculate(tartgetTurretPosition)));
+      shooterRotationFx.setControl(new PositionVoltage(tartgetTurretPosition));
     }
     else
     {

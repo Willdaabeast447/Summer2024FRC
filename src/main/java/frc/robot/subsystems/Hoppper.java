@@ -22,10 +22,10 @@ public class Hoppper extends SubsystemBase {
    */
   private ShuffleboardTab tab = Shuffleboard.getTab("Hopper");
    private GenericEntry RHB_Speed =
-      tab.add("RHB Speed", 0)
+      tab.add("RHB Speed", 0.3)
          .getEntry();
     private GenericEntry elevator_Speed =
-      tab.add("Elevator Speed", 0)
+      tab.add("Elevator Speed", 1)
          .getEntry();
   /** Creates a new Hoppper. */
   public Hoppper() {
@@ -35,7 +35,7 @@ public class Hoppper extends SubsystemBase {
   
   // set the speed of the Rotary Ball Hopper
   public void setAgitator(){
-    agitatorFx.set(TalonSRXControlMode.PercentOutput,RHB_Speed.getDouble(0));
+    agitatorFx.set(TalonSRXControlMode.PercentOutput,RHB_Speed.getDouble(0.3));
   }
   // stop the Rotary Ball Hopper
   public void stopAgitator(){
@@ -44,7 +44,7 @@ public class Hoppper extends SubsystemBase {
   
   // set the speed of the elevator
   public void setElevator(){
-    elevatorTalonFX.set(TalonSRXControlMode.PercentOutput, elevator_Speed.getDouble(0));
+    elevatorTalonFX.set(TalonSRXControlMode.PercentOutput, elevator_Speed.getDouble(1));
   }
   // stop the elevator
   public void stopElevator(){
