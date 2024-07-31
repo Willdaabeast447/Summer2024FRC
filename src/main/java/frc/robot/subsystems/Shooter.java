@@ -140,8 +140,8 @@ public Shooter() {
     double output;
     if (Math.abs(setpoint)>ShooterConstants.turretRotationLimitDeg)
     {
-      double theta= Math.abs(setpoint)-ShooterConstants.turretRotationLimitDeg;
-      if (setpoint>ShooterConstants.turretRotationLimitDeg){
+      double theta= Math.abs(setpoint)%ShooterConstants.turretRotationLimitDeg;
+      if (setpoint>0){
         output=-ShooterConstants.turretRotationLimitDeg+theta;        
       }
       else{

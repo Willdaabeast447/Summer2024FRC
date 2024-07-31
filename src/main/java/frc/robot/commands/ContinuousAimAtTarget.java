@@ -34,7 +34,7 @@ public class ContinuousAimAtTarget extends Command {
     this.targetTag=targetTag;
     addRequirements(sight);
     addRequirements(shooter);
-    addRequirements(drive);
+    
     
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -49,8 +49,8 @@ public class ContinuousAimAtTarget extends Command {
   @Override
   public void execute() {
     pose=drive.getPose();
-    double robotRotation=pose.getRotation().getDegrees();
-    SmartDashboard.putNumber("x pose ", pose.getX());
+    double robotRotation=pose.getRotation().getDegrees()>0?pose.getRotation().getDegrees():360+pose.getRotation().getDegrees();
+    SmartDashboard.putNumber("rotation pose ", robotRotation);
     PhotonTrackedTarget target = sight.lookForTag(targetTag);
     if(target!=null){
        this.yaw = -target.getYaw();
@@ -58,13 +58,17 @@ public class ContinuousAimAtTarget extends Command {
       }
       else{
         
-        double deltaY= pose.getY()-tagPose.getY();
+        double deltaY= -pose.getY()+tagPose.getY();
+        SmartDashboard.putNumber("deltay", deltaY);
         double deltaX =pose.getX()-tagPose.getX();
-        double angleTheta=Math.toDegrees(Math.atan(deltaY/deltaX)) ;
-        double angleBeta=90-angleTheta;
+        SmartDashboard.putNumber("deltax", deltaX);
+        double angleTheta=Math.toDegrees(Math.atan(deltaX/deltaY));
+        SmartDashboard.putNumber("Angle theta", angleTheta);
+        double angleBeta=90-Math.abs(angleTheta);
+        SmartDashboard.putNumber("angle beta", angleBeta);
         double angleAlpha;
-        if (deltaX<0){
-          if (deltaY>0){
+        if (deltaY<0){
+          if (deltaX>0){
           angleAlpha=180+angleBeta;
           }
           else{
@@ -72,7 +76,7 @@ public class ContinuousAimAtTarget extends Command {
           }
         }
         else{
-          if (deltaY>0){
+          if (deltaX>0){
           angleAlpha=180-angleBeta;
           }
           else{
@@ -80,8 +84,9 @@ public class ContinuousAimAtTarget extends Command {
           }
 
         }
-            
+         SmartDashboard.putNumber("angle alpha", angleAlpha);   
         double turretAngle=angleAlpha-robotRotation;
+        SmartDashboard.putNumber("turret aiming angle", turretAngle);
         shooter.driveTurretToPos(turretAngle);
       }
     
