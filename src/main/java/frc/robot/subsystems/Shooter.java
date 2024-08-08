@@ -10,16 +10,16 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;;
 public class Shooter extends SubsystemBase {
 private final TalonSRX elevatorTalonFX= new TalonSRX(ShooterConstants.kElevatorId);
-  
-  
 private final TalonFX shooterLeftFx= new TalonFX(ShooterConstants.kShooterLeftId);
 private final TalonFX shooterRightFx = new TalonFX(ShooterConstants.kShooterRightId);
 private final TalonFX shooterRotationFx= new TalonFX(ShooterConstants.kShooterRotationId);
@@ -29,11 +29,18 @@ private double tartgetTurretPosition=0;
 private boolean enableTurretPID=false;
 private double TurretmotorValue=0;
 
+private PIDController velocityPID = new PIDController(0, 0, 0);
+/*
+ * create tab on shuffle board and there create control for custom 
+ * dashboard
+ */
 private ShuffleboardTab tab = Shuffleboard.getTab("Shooter");
    private GenericEntry Flywheel_Speed =
       tab.add("Flywheel Speed", 0)
          .getEntry();
 /** Creates a new Shooter. */
+
+
 public Shooter() {
   shooterRotationFx.getPosition() ; 
   TalonFXConfiguration configs = new TalonFXConfiguration();
@@ -163,6 +170,15 @@ public Shooter() {
     shooterRightFx.set(motorValue);
   }
 
+
+public void velocityControledShooterMotor (double motorValue){
+  double setpoint= velocityPID.calculate(shooterLeftFx.getVelocity().getValueAsDouble(),motorValue/60);   
+  shooterLeftFx.set(setpoint);
+  shooterRightFx.set(setpoint);
+}
+
+
+
   public void testMotors(double speed,double rot){
   elevatorTalonFX.set(ControlMode.PercentOutput, -speed);  
 
@@ -182,5 +198,6 @@ public Shooter() {
     {
       shooterRotationFx.set(turretRotationlimits(getTurretPosition(), TurretmotorValue));
     }
+    SmartDashboard.putNumber("shooterRPS", shooterLeftFx.getVelocity().getValueAsDouble());
   }
 }
