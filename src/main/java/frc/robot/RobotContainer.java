@@ -12,9 +12,11 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.commands.DriveWithPoseEstimation;
 import frc.robot.commands.ManualShooter;
 import frc.robot.commands.OribitCurrentPosition;
-import frc.robot.commands.ContinuousAimAtTarget;
+import frc.robot.commands.Shoot;
 import frc.robot.commands.AutoAimAtBestTarget;
+import frc.robot.commands.ContinuousAimAtTarget;
 import frc.robot.commands.ShooterGetYaw;
+import frc.robot.commands.SpinUP;
 import frc.robot.commands.TestVisionPose;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.Hoppper;
@@ -27,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -65,6 +68,9 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+    NamedCommands.registerCommand("SpinUP", new SpinUP(m_Shooter));
+    NamedCommands.registerCommand("Shoot", new Shoot(m_Shooter, hoppper));
     // Configure the button bindings
     configureButtonBindings();
 
