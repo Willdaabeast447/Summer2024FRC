@@ -10,13 +10,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Hoppper;
 import frc.robot.subsystems.Shooter;
 
-public class TestShooter extends Command {
+public class TESTshooter extends Command {
   private  Shooter shooter;
   private double position;
   private Hoppper hopper;
   private DoubleSupplier speed;
   /** Creates a new TestToggle. */
-  public TestShooter(Shooter shooterSubsystem,Hoppper hoppper ,double position,DoubleSupplier speed) {
+  public TESTshooter(Shooter shooterSubsystem,Hoppper hoppper ,double position,DoubleSupplier speed) {
     this.shooter=shooterSubsystem;
     this.position=position;
     this.hopper=hoppper;
